@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+    <section id="mainSection">
+        <form>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label>Enter SyCode:</label>
+                            <input id="syCodeInput" value="BAFC 2010-R1 1A5" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="btnGetSymbologyInfo" >Get Symbology Info</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>URL queried:</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span id="urlQueried"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Response:</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span id="symbologyResult"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </section>
+
+    <script type="text/javascript">
+        $('#btnGetSymbologyInfo').click(function (args) {
+            args.preventDefault();
+
+            var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
+
+            $("#urlQueried").text(url);
+
+            //$.get(url,
+            //     function (data) {
+            //         $("#symbologyResult").text(data);
+            //     });
+
+            $.getJSON(url,
+                function (data) {
+                    console.log("data: " + data);
+                    $("#symbologyResult").text(data);
+                });
+        });
+    </script>
+</body>
+
+</html>
