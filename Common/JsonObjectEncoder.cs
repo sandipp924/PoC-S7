@@ -21,7 +21,17 @@ namespace Common
 
         public TObject Decode(byte[] data)
         {
-            return data.FromUtf8Bytes().FromJson<TObject>();
+            string s = data.FromUtf8Bytes();
+
+            // ServiceStack unescapes JSON data and returns a string without quotes around property and data names
+            // when you call FromJson<object> or FromJson<string> on a JSON string. So in that case we should just
+            // return the data as is.
+            if (typeof(TObject) == typeof(object) || typeof(TObject) == typeof(string))
+            {
+                return (TObject)(object)s;
+            }
+
+            return s.FromJson<TObject>();
         }
     }
 }
