@@ -52,19 +52,13 @@
             args.preventDefault();
 
             var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
-
             $("#urlQueried").text(url);
 
-            //$.get(url,
-            //     function (data) {
-            //         $("#symbologyResult").text(data);
-            //     });
-
-            $.getJSON(url,
-                function (data) {
-                    console.log("data: " + data);
-                    $("#symbologyResult").text(data);
-                });
+            $.get(url,
+                 function (data) {
+                     console.log("Data: " + data);
+                     $("#symbologyResult").text(data);
+                 });
         });
     </script>
 </body>
