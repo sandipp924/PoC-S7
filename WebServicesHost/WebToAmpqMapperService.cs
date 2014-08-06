@@ -29,14 +29,14 @@ namespace WebServices
 
         public object Any(SymbologyInfoQuery symbologyInfoQuery)
         {
-            return GetIml(symbologyInfoQuery);
+            return GetIml<SymbologyInfoQuery, object>(symbologyInfoQuery);
         }
 
-        private object GetIml<T>(T queryObject)
+        private object GetIml<TMessage, TResponse>(TMessage queryObject)
         {
-            using (var rpcCallHelper = new RabbitMqRpcHelper<T, object>(_rabbitMqConnectionFactory))
+            using (var rpcCallHelper = new RabbitMqRpcHelper<TMessage, TResponse>(_rabbitMqConnectionFactory))
             {
-                object response;
+                TResponse response;
                 Exception error;
                 if (rpcCallHelper.Call(queryObject, out response, TimeOut, out error))
                     return response;

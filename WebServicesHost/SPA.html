@@ -39,6 +39,26 @@
                     </tr>
                     <tr>
                         <td>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>SyCode:</td>
+                                        <td><span id="syCode"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>CUSIP:</td>
+                                        <td><span id="cusip"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Description:</td>
+                                        <td><span id="description"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>LoanXId:</td>
+                                        <td><span id="loanXId"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <span id="symbologyResult"></span>
                         </td>
                     </tr>
@@ -54,10 +74,12 @@
             var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
             $("#urlQueried").text(url);
 
-            $.get(url,
+            $.getJSON(url,
                  function (data) {
-                     console.log("Data: " + data);
-                     $("#symbologyResult").text(data);
+                     $("#syCode").text(data.syCode);
+                     $("#cusip").text(data.cusip);
+                     $("#description").text(data.description);
+                     $("#loanXId").text(data.loanXId);
                  });
         });
     </script>

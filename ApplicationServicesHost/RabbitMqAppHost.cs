@@ -33,6 +33,17 @@ namespace ApplicationServicesHost
         /// <param name="container">The built-in IoC used with ServiceStack.</param>
         public override void Configure(Container container)
         {
+            //Set JSON web services to return idiomatic JSON camelCase properties   
+            ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
+
+            //Change the default ServiceStack configuration
+            this.SetConfig(new HostConfig
+            {
+                EnableFeatures = Feature.Json,
+                DefaultContentType = MimeTypes.Json,
+                PreferredContentTypes = new List<string> { MimeTypes.Json }
+            });
+
             var connectionFactory = new ConnectionFactory
             {
                 Uri = AmqpServerUri

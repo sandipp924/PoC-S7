@@ -24,8 +24,6 @@ namespace WebServices
         /// <param name="container">The built-in IoC used with ServiceStack.</param>
         public override void Configure(Container container)
         {
-            return;
-
             //Set JSON web services to return idiomatic JSON camelCase properties   
             ServiceStack.Text.JsConfig.EmitCamelCaseNames = true;
 
@@ -36,7 +34,7 @@ namespace WebServices
                 EnableFeatures = Feature.All.Remove(disableFeatures), //all formats except of JSV and SOAP
                 DebugMode = true, //Show StackTraces in service responses during development
                 WriteErrorsToResponse = false, //Disable exception handling
-                //DefaultContentType = MimeTypes.Json, //Change default content type
+                DefaultContentType = MimeTypes.Json, //Change default content type
                 AllowJsonpRequests = true, //Enable JSONP requests
             });
         }
