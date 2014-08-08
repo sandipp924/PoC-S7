@@ -16,7 +16,9 @@ namespace WebServices
         /// <summary>
         /// Initializes a new instance of your ServiceStack application, with the specified name and assembly containing the services.
         /// </summary>
-        public WebServicesAppHost() : base("Web Services Host", typeof(WebToAmpqMapperService).Assembly) { }
+        public WebServicesAppHost() : base("Web Services Host", typeof(WebToAmpqMapperService).Assembly) 
+        {
+        }
 
         /// <summary>
         /// Configure the container with the necessary routes for your ServiceStack application.
@@ -36,6 +38,11 @@ namespace WebServices
                 WriteErrorsToResponse = false, //Disable exception handling
                 //DefaultContentType = MimeTypes.Json, //Change default content type
                 AllowJsonpRequests = true, //Enable JSONP requests
+            });
+
+            GlobalResponseFilters.Add((request, response, responseDto) =>
+            {
+                response.AddHeader("Cache-Control", "no-cache");
             });
         }
     }

@@ -12,10 +12,18 @@ namespace ApplicationServicesHost
     {
         static void Main(string[] args)
         {
-            var appHost = new RabbitMqAppHost();
-            appHost.Init();
+            Console.WriteLine("Running RabbitMqAppHost...");
 
-            Console.WriteLine("Running RabbitMqAppHost.");
+            try
+            {
+                var appHost = new RabbitMqAppHost();
+                appHost.Init();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Error: " + exception.Message);
+            }
+
             Console.WriteLine("Press a key to quit...");
             Console.ReadKey();
         }

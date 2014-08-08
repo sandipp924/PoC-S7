@@ -40,9 +40,9 @@ namespace WebServices
                 Exception error;
                 if (rpcCallHelper.Call(queryObject, out response, TimeOut, out error))
                     return response;
+                else
+                    return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
             }
-
-            return null;
         }
     }
 }

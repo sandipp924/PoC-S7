@@ -8,14 +8,13 @@ using ServiceStack;
 
 namespace Services
 {
-    public interface IReferenceService : IService
-    {
-        SymbologyInfo Any(SymbologyInfoQuery query);
-    }
-
     public class ReferenceService : IReferenceService
     {
         private int _callCount;
+
+        public ReferenceService()
+        {
+        }
 
         public SymbologyInfo Any(SymbologyInfoQuery query)
         {

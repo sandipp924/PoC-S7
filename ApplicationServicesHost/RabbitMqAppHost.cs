@@ -25,7 +25,7 @@ namespace ApplicationServicesHost
         /// <summary>
         /// Initializes a new instance of your RabbitMQ Services host application, with the specified name and assembly containing the services.
         /// </summary>
-        public RabbitMqAppHost() : base("RabbitMQ Services Host", typeof(ReferenceService).Assembly) { }
+        public RabbitMqAppHost() : base("RabbitMQ Services Host", typeof(RabbitMqAppHost).Assembly) { }
 
         /// <summary>
         /// Configure the container with the necessary routes for your ServiceStack application.
@@ -48,8 +48,13 @@ namespace ApplicationServicesHost
             {
                 Uri = AmqpServerUri
             };
-            
-            var processor = new RabbitMqMessageProcessor<SymbologyInfoQuery, SymbologyInfo>(
+
+            this.RegisterService(typeof(MockReferenceService));
+            container.Register(new MockReferenceService(), typeof(MockReferenceService));
+
+            RabbitMqMessageProcessor<SymbologyInfoQuery, SymbologyInfo> processor = null;
+
+            processor = new RabbitMqMessageProcessor<SymbologyInfoQuery, SymbologyInfo>(
                 new RabbitMqReadMessageQueue<SymbologyInfoQuery>(connectionFactory, new MqConfiguration { ExchangeDurable = true, QueueDurable = true, MessageDurable = true, NoAck = false }),
                 query => (SymbologyInfo)ServiceController.Execute(query));
 

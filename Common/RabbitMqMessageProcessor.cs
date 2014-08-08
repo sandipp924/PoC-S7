@@ -19,6 +19,7 @@ namespace Common
         private readonly Func<TMessage, TResponse> _processMessage;
         private readonly IObjectEncoder<TResponse> _responseEncoder;
         private bool _stop;
+        private readonly object _sendMessageLock = new object();
 
         public RabbitMqMessageProcessor(RabbitMqReadMessageQueue<TMessage> inQueue, Func<TMessage, TResponse> processMessage)
         {
@@ -34,29 +35,51 @@ namespace Common
             if (!_inQueue.Get(timeOut, out message, out messageEventArgs))
                 return;
 
-            try
+            "".ToString();
+
+            Task.Run<TResponse>(() =>
             {
-                var response = _processMessage(message);
-
-                var sourceProps = messageEventArgs.BasicProperties;
-
-                var channel = _inQueue.Channel;
-                var publishProps = channel.CreateBasicProperties();
-                if (sourceProps.CorrelationId != null)
-                    publishProps.CorrelationId = sourceProps.CorrelationId;
-
-                publishProps.SetPersistent(false);
-
-                channel.BasicPublish(RabbitMqReadMessageQueue<TMessage>.ExchangeName, sourceProps.ReplyTo, publishProps, _responseEncoder.Encode(response));
-                if (!_inQueue.MqConfiguration.NoAck)
+                try
                 {
-                    channel.BasicAck(messageEventArgs.DeliveryTag, false);
+                    return _processMessage(message);
                 }
-            }
-            catch (Exception exception)
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Error in service: " + exception.Message);
+                    return default(TResponse);
+                }
+            }).ContinueWith(t =>
             {
-                Console.WriteLine("Exception: " + exception.Message);
-            }
+                var response = t.Result;
+                if (response != null)
+                {
+                    try
+                    {
+                        var sourceProps = messageEventArgs.BasicProperties;
+
+                        var channel = _inQueue.Channel;
+                        var publishProps = channel.CreateBasicProperties();
+                        if (sourceProps.CorrelationId != null)
+                            publishProps.CorrelationId = sourceProps.CorrelationId;
+
+                        publishProps.SetPersistent(false);
+
+                        //TODO: Lock may not be necessary if channel ops are thread-safe.
+                        lock (_sendMessageLock)
+                        {
+                            channel.BasicPublish(RabbitMqReadMessageQueue<TMessage>.ExchangeName, sourceProps.ReplyTo, publishProps, _responseEncoder.Encode(response));
+                            if (!_inQueue.MqConfiguration.NoAck)
+                            {
+                                channel.BasicAck(messageEventArgs.DeliveryTag, false);
+                            }
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("Error sending MQ message: " + exception.Message);
+                    }
+                }
+            });
         }
 
         public void Run()

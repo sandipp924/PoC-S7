@@ -17,10 +17,10 @@ namespace WebServicesHost
 
             Task.Delay(500).ContinueWith(t =>
             {
-                Process.Start("http://localhost:8080/SPA.html");
+                Enumerable.Range(0, 1).ToList().ForEach(i => Process.Start("http://localhost:8080/SPA.html"));
             });
 
-            Console.WriteLine("Running RabbitMqAppHost.");
+            Console.WriteLine("Running WebServicesAppHost.");
             Console.WriteLine("Press a key to quit...");
             Console.ReadKey();
         }

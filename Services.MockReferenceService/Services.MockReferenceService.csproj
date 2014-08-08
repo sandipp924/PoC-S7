@@ -65,6 +65,10 @@
       <Project>{fa2469f8-d5fe-48cd-8a24-5ee5f1dd4aaf}</Project>
       <Name>Services.ReferenceService.Dtos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Services.ReferenceService.Interfaces\Services.ReferenceService.Interfaces.csproj">
+      <Project>{879b91b4-2633-4ede-a88c-d953f52fa2e7}</Project>
+      <Name>Services.ReferenceService.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

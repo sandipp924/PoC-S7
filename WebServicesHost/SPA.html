@@ -3,86 +3,179 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    
     <title></title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var getSymbologyInfo = function () {
+                var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
+                $("#urlQueried").text(url);
+
+                $("#status").text("Querying for symbology data...");
+                $("#error").text("");
+
+                $.getJSON(url, function (data) {
+                    $("#syCode").text(data.syCode);
+                    $("#cusip").text(data.cusip);
+                    $("#description").text(data.description);
+                    $("#loanXId").text(data.loanXId);
+                    $("#status").text("Got back results.");
+                    document.title = "Query returned...";
+                }).fail(function (jqXHR, textStatus, error) {
+                    $("#status").text("");
+                    $("#error").text("Error: " + error);
+                });
+            };
+
+            $('#btnGetSymbologyInfo').click(function (args) {
+                args.preventDefault();
+                getSymbologyInfo();
+            });
+
+            $('#btnParallelQueries').click(function (args) {
+                args.preventDefault();
+
+                $("#multiQueryError").text("");
+                $("#multiQueryStatus").text("Executing 10 queries...");
+
+                var resultCount = 0;
+                var errorCount = 0;
+                var list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                list.forEach(function (i) {
+                    var info = { queryTime: new Date().toLocaleTimeString(), queryNo: i };
+
+                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i;
+
+                    $.getJSON(url, function (data) {
+                        var rowTemplate = "<tr><td>${queryNo}</td>"
+                            + "<td>${queryTime}</td>"
+                            + "<td>${resultTime}</td>"
+                            + "<td>${syCode}</td>"
+                            + "<td>${description}</td></tr>";
+
+                        data.queryNo = info.queryNo;
+                        data.queryTime = info.queryTime;
+                        data.resultTime = new Date().toLocaleTimeString();
+                        $("#multiQueryResultsTable tbody").append($.tmpl(rowTemplate, data));
+
+                        resultCount++;
+                        $("#multiQueryStatus").text("Got " + resultCount + " results back.");
+                    }).fail(function (jqXHR, textStatus, error) {
+                        resultCount++;
+                        $("#multiQueryResultsTable tbody").append('<tr><td>' + info.queryNo + '</td><td><span style="color:red">Error: ' + error + '</span></td></tr>');
+                    });
+                });
+             });
+        });
+    </script>
+    <style>
+        table.a {
+            border-collapse: collapse;
+        }
+        table.a th {
+            border: 1px solid lightgray;
+            text-align: left;
+       }
+       table.a td {
+            border: 1px solid lightgray;
+            text-align: left;
+       }
+    </style>
 </head>
 <body>
     <section id="mainSection">
-        <form>
-            <table>
+        <div style="margin: 5px; background: #eeeeff">
+            <form>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label>Enter SyCode:</label>
+                                <input id="syCodeInput" value="BAFC 2010-R1 1A5" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="btnGetSymbologyInfo">Click here to get Symbology Info</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>URL queried:</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span id="urlQueried"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Response:</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table id="singleQueryResultTable" class="a">
+                                    <tbody>
+                                        <tr>
+                                            <td>SyCode:</td>
+                                            <td style="min-width:200px"><span id="syCode"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CUSIP:</td>
+                                            <td><span id="cusip"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Description:</td>
+                                            <td><span id="description"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>LoanXId:</td>
+                                            <td><span id="loanXId"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <span id="symbologyResult"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>
+                    <span id="status" style="color: blue"></span>
+                    <span id="error" style="color: red"></span>
+                </p>
+            </form>
+        </div>
+
+        <div style="margin: 5px; background: #eeeeff">
+            <p>
+                Example of multiple queries executed in parallel. Application service takes random amount of time between <b>4 and 8 seconds to process</b> each call.
+                This example demonstrates execution of queries in parallel.<br />
+                <button id="btnParallelQueries">Click here</button> to execute 10 queries at the same time.
+                <br />
+                <span id="multiQueryStatus"></span>
+            </p>
+            <p>Results:</p>
+            <table id="multiQueryResultsTable" class="a" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Query No#</th>
+                        <th>Query Time</th>
+                        <th>Response Time</th>
+                        <th>SyCode</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <label>Enter SyCode:</label>
-                            <input id="syCodeInput" value="BAFC 2010-R1 1A5" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button id="btnGetSymbologyInfo" >Get Symbology Info</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>URL queried:</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span id="urlQueried"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Response:</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>SyCode:</td>
-                                        <td><span id="syCode"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>CUSIP:</td>
-                                        <td><span id="cusip"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Description:</td>
-                                        <td><span id="description"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>LoanXId:</td>
-                                        <td><span id="loanXId"></span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <span id="symbologyResult"></span>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
-        </form>
+        </div>
     </section>
-
-    <script type="text/javascript">
-        $('#btnGetSymbologyInfo').click(function (args) {
-            args.preventDefault();
-
-            var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
-            $("#urlQueried").text(url);
-
-            $.getJSON(url,
-                 function (data) {
-                     $("#syCode").text(data.syCode);
-                     $("#cusip").text(data.cusip);
-                     $("#description").text(data.description);
-                     $("#loanXId").text(data.loanXId);
-                 });
-        });
-    </script>
 </body>
 
 </html>
