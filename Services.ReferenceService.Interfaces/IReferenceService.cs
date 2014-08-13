@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace Services.Dtos
 {
+    /// <summary>
+    /// Interface that specifies the api contract of reference service.
+    /// </summary>
     public interface IReferenceService : IService
     {
-        SymbologyInfo Any(SymbologyInfoQuery query);
+        SymbologyInfo Get(SymbologyInfoQuery query);
     }
 }

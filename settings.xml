@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<appSettings>
+
+  <!--LogFactory to use. Options are Console, Debug, Log4Net-->
+  <add key="LogFactory" value="Console" />
+
+  <!--HTTP listen port for the webserver. NOTE: If you change this value modify the SPA.html that's used for demonstration in WebServerHost.-->
+  <add key="HttpListenPort" value="8080" />
+
+  <!--Address of the RabbitMq server.-->
+  <add key="AmqpServer" value="amqp://localhost:5672" />
+  
+  <!--AMQP configuration
+  NOTE: When changing exchange/queue declaration parameters you need to delete queues from the rabbit mq broker. RabbitMq does not allow
+  redeclaring exchanges and queues using different sets of parameters.
+  -->
+  <add key="AmqpConfiguration" value="{ExchangeDurable:true,QueueDurable:true,MessageDurable:true,NoAck:true,MessageExpiration:60000,DefaultResponseTimeOut:10000}" />
+
+  <!--Value is comma seperated list of services to run.-->
+  <add key="ServicesToRun" value="ReferenceService" />
+
+  <!--UseMock will use a service by the same name but with 'Mock' prefix - ie MockReferenceService.-->
+  <add key="ReferenceService" value="{UseMock: true}" />
+
+  <!--Per DTO configuration settings. These are de-serialized into DtoConfigurationSettings class in common assembly.-->
+  <add key="SymbologyInfoQuery" value="{AmqpResponseTimeOut:10000,LogQueries:true}" />
+  
+</appSettings>

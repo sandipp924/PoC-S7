@@ -12,6 +12,10 @@ using System;
 
 namespace Common
 {
+    /// <summary>
+    /// Uses Service-Stack JSON serialization/deserialization to encode or decode objects.
+    /// </summary>
+    /// <typeparam name="TObject"></typeparam>
     public class JsonObjectEncoder<TObject> : IObjectEncoder<TObject>
     {
         public byte[] Encode(TObject value)

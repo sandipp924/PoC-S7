@@ -17,17 +17,20 @@ namespace Common
         private RabbitMqWriteMessageQueue<TMessage> _sendQueue;
         private RabbitMqReadMessageQueue<TResponse> _recieveQueue;
 
-        public RabbitMqRpcHelper(ConnectionFactory connectionFactory)
+        public RabbitMqRpcHelper(ConnectionFactory connectionFactory, MqConfiguration mqConfiguration)
         {
-            _sendQueue = new RabbitMqWriteMessageQueue<TMessage>(connectionFactory, new MqConfiguration { ExchangeDurable = true, QueueDurable = true, MessageDurable = true, NoAck = false });
-            _recieveQueue = new RabbitMqReadMessageQueue<TResponse>(connectionFactory, new MqConfiguration { ExchangeDurable = true, QueueDurable = false, MessageDurable = false, NoAck = true }, true);
+            _sendQueue = new RabbitMqWriteMessageQueue<TMessage>(connectionFactory, mqConfiguration);
+            _recieveQueue = new RabbitMqReadMessageQueue<TResponse>(connectionFactory, 
+                // Make reply queues and messages non-durable and not requiring ack's.
+                new MqConfiguration { ExchangeDurable = mqConfiguration.ExchangeDurable, QueueDurable = false, MessageDurable = false, NoAck = true },
+                useTempQueue: true);
         }
 
         public bool Call(TMessage message, out TResponse response, TimeSpan? timeOut, out Exception error)
         {
-            _sendQueue.Write(message, _recieveQueue.QueueName);
+            _sendQueue.WriteMessage(message, _recieveQueue.QueueName);
             BasicDeliverEventArgs messageEventArgs;
-            if (_recieveQueue.Get(timeOut, out response, out messageEventArgs))
+            if (_recieveQueue.ReadNextMessage(timeOut, out response, out messageEventArgs))
             {
                 error = null;
                 return true;

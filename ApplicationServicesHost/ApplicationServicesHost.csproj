@@ -73,6 +73,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RabbitMqInfrastructure\RabbitMqInfrastructure.csproj">
+      <Project>{938baecc-a9db-4dbd-aeea-b7f0a026b686}</Project>
+      <Name>RabbitMqInfrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Services.MockReferenceService\Services.MockReferenceService.csproj">
       <Project>{6f248b6a-b738-4c88-8618-34e2f82ca49f}</Project>
       <Name>Services.MockReferenceService</Name>
@@ -95,6 +99,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)settings.xml" "$(TargetDir)" /B /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

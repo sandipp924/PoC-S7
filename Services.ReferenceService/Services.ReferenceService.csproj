@@ -58,6 +58,10 @@
     <Compile Include="ReferenceService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{15e9856e-d928-4181-ab89-ee4be2b5618e}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Services.ReferenceService.Dtos\Services.ReferenceService.Dtos.csproj">
       <Project>{fa2469f8-d5fe-48cd-8a24-5ee5f1dd4aaf}</Project>
       <Name>Services.ReferenceService.Dtos</Name>

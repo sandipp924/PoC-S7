@@ -23,7 +23,7 @@
                     $("#cusip").text(data.cusip);
                     $("#description").text(data.description);
                     $("#loanXId").text(data.loanXId);
-                    $("#status").text("Got back results.");
+                    $("#status").text("Got back results: " + JSON.stringify(data));
                     document.title = "Query returned...";
                 }).fail(function (jqXHR, textStatus, error) {
                     $("#status").text("");
@@ -48,7 +48,7 @@
                 list.forEach(function (i) {
                     var info = { queryTime: new Date().toLocaleTimeString(), queryNo: i };
 
-                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i;
+                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i + "?timeToWait=" + Math.floor((4000 + Math.random() * 4000));
 
                     $.getJSON(url, function (data) {
                         var rowTemplate = "<tr><td>${queryNo}</td>"
@@ -69,7 +69,31 @@
                         $("#multiQueryResultsTable tbody").append('<tr><td>' + info.queryNo + '</td><td><span style="color:red">Error: ' + error + '</span></td></tr>');
                     });
                 });
-             });
+            });
+
+
+            $('#btnTimeOut').click(function (args) {
+                args.preventDefault();
+                
+                var url = "http://localhost:8080/Reference/Symbology/" + "test123?TimeToWait=20000";
+
+                $("#timeOutQueryStatus").text("Sending request: " + url);
+                $("#timeOutQueryError").text("");
+
+                var secondsCounter = 0;
+                var timerId = setInterval(function () {
+                    $("#timeOutCountDown").text("Waiting for reply... " + ++secondsCounter + " seconds");
+                }, 1000);
+
+                $.getJSON(url, function (data) {
+                    $("#timeOutQueryStatus").text("Got back results: " + JSON.stringify(data));
+                    $("#timeOutCountDown").text("");
+                }).fail(function (jqXHR, textStatus, error) {
+                    $("#timeOutCountDown").text("");
+                    $("#timeOutQueryError").text(error);
+                    clearInterval(timerId);
+                });
+            });
         });
     </script>
     <style>
@@ -89,6 +113,7 @@
 <body>
     <section id="mainSection">
         <div style="margin: 5px; background: #eeeeff">
+            <h4>Demonstration of Request/Reply pipeline. Enter SyCode in the textbox below and click the following button.</h4>
             <form>
                 <table>
                     <tbody>
@@ -153,9 +178,10 @@
         </div>
 
         <div style="margin: 5px; background: #eeeeff">
+            <h4>Demonstration of queries executed in parallel.</h4>
             <p>
                 Example of multiple queries executed in parallel. Application service takes random amount of time between <b>4 and 8 seconds to process</b> each call.
-                This example demonstrates execution of queries in parallel.<br />
+                <br />
                 <button id="btnParallelQueries">Click here</button> to execute 10 queries at the same time.
                 <br />
                 <span id="multiQueryStatus"></span>
@@ -175,6 +201,29 @@
                 </tbody>
             </table>
         </div>
+
+        <div style="margin: 5px; background: #eeeeff">
+            <h4>Demonstration of time-out with an application service taking too long to process a request.</h4>
+            <p>
+                Click the following button which will cause the application service to sleep for 20 seconds causing the web-server to return
+                a time-out HTTP reply. Time-out periods are configurable via settings.xml.
+                <br />
+                <button id="btnTimeOut">Click here</button> to send a request that will time-out.
+                <br />
+            </p>
+            <p>
+                <span id="timeOutQueryStatus" style="color: blue"></span>
+                <br />
+                <span id="timeOutCountDown" style="color: blue;"></span>
+                <br />
+                <span id="timeOutQueryError" style="color: red"></span>
+            </p>
+        </div>
+
+        <p></p>
+        <p></p>
+        <p></p>
+        <p></p>
     </section>
 </body>
 

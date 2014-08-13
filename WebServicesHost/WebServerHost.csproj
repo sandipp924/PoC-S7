@@ -7,8 +7,8 @@
     <ProjectGuid>{F89BC237-0B83-416C-B697-BC04FD29FF5C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebServicesHost</RootNamespace>
-    <AssemblyName>WebServicesHost</AssemblyName>
+    <RootNamespace>WebServerHost</RootNamespace>
+    <AssemblyName>WebServerHost</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -72,6 +72,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RabbitMqInfrastructure\RabbitMqInfrastructure.csproj">
+      <Project>{938baecc-a9db-4dbd-aeea-b7f0a026b686}</Project>
+      <Name>RabbitMqInfrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Services.ReferenceService.Dtos\Services.ReferenceService.Dtos.csproj">
       <Project>{fa2469f8-d5fe-48cd-8a24-5ee5f1dd4aaf}</Project>
       <Name>Services.ReferenceService.Dtos</Name>
@@ -87,6 +91,9 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)settings.xml" "$(TargetDir)" /B /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

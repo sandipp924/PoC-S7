@@ -12,6 +12,10 @@ using System;
 
 namespace Common
 {
+    /// <summary>
+    /// Encodes an object into byte array and decodes it from a byte array.
+    /// </summary>
+    /// <typeparam name="TObject">Type of object to encode or decode.</typeparam>
     public interface IObjectEncoder<TObject>
     {
         byte[] Encode(TObject value);

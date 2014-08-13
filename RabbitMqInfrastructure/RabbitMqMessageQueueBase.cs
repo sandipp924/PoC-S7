@@ -12,8 +12,16 @@ using System;
 
 namespace Common
 {
+    #region RabbitMqMessageQueueBase Class
+
+    /// <summary>
+    /// Base class that manages a RabbitMq message queue. Can be used for reading or writing to the queue.
+    /// </summary>
+    /// <typeparam name="TMessage">Type of messages that will be recieved or written to on this queue.</typeparam>
     public abstract class RabbitMqMessageQueueBase<TMessage> : IDisposable
     {
+        #region Member Vars
+
         public static readonly string ExchangeName = "mq-services-exchange";
 
         private readonly ConnectionFactory _connectionFactory;
@@ -23,6 +31,17 @@ namespace Common
         protected readonly MqConfiguration _mqConfiguration;
         protected readonly IObjectEncoder<TMessage> _messageEncoder;
 
+        #endregion
+        
+        #region Constructor
+
+        /// <summary>
+        /// Constructor. Initializes a new instance of <see cref="RabbitMqMessageQueueBase"/>.
+        /// </summary>
+        /// <param name="connectionFactory">RabbitMq connection factory used to create connections to the RabbitMq broker.</param>
+        /// <param name="mqConfiguration">Configuration parameters for creation of RabbitMq entities such as exchanges, queues and messages.</param>
+        /// <param name="useTempQueue">Whether to use temporary queue instead of a pre-defined queue name for <typeparamref name="TMessage"/> type. If true a
+        /// RabbitMq temp queue is created where messages will be read from or written to. If false, a queue by a name predfined for <i>TMessage</i> type is used.</param>
         protected RabbitMqMessageQueueBase(ConnectionFactory connectionFactory, MqConfiguration mqConfiguration, bool useTempQueue = false)
         {
             _connectionFactory = connectionFactory;
@@ -54,12 +73,21 @@ namespace Common
             }
 
             _channel.QueueBind(_queueName, ExchangeName, _queueName);
-        }
+        } 
+
+        #endregion
+
+        #region Properties
 
         public IModel Channel { get { return _channel; } }
         public MqConfiguration MqConfiguration { get { return _mqConfiguration; } }
-        public string QueueName { get { return _queueName; } }
+        public string QueueName { get { return _queueName; } } 
 
+        #endregion
+
+        #region Methods
+
+        #region Dispose
         public void Dispose()
         {
             if (_channel != null)
@@ -74,11 +102,19 @@ namespace Common
                 _connection = null;
             }
         }
+        #endregion 
 
+        #endregion
+
+        #region Destructor
+        // This may not be necessary if RabbitMq connection also implements finalizer.
         ~RabbitMqMessageQueueBase()
         {
             this.Dispose();
             GC.SuppressFinalize(this);
-        }
-    }
+        } 
+        #endregion
+    } 
+
+    #endregion
 }

@@ -1,5 +1,7 @@
-﻿using ServiceStack;
+﻿using Common;
+using ServiceStack;
 using ServiceStack.Configuration;
+using ServiceStack.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +14,6 @@ namespace ApplicationServicesHost
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Running RabbitMqAppHost...");
-
             try
             {
                 var appHost = new RabbitMqAppHost();
@@ -21,8 +21,10 @@ namespace ApplicationServicesHost
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Error: " + exception.Message);
+                typeof(Program).ErrorFormat("Error: {0}", exception.Message);
             }
+
+            typeof(Program).Debug("Running RabbitMqAppHost...");
 
             Console.WriteLine("Press a key to quit...");
             Console.ReadKey();

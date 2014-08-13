@@ -7,13 +7,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.ReferenceService.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationServicesHost", "ApplicationServicesHost\ApplicationServicesHost.csproj", "{AA67B5CA-7C8A-4B71-8319-DFC7EF27D8C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServicesHost", "WebServicesHost\WebServicesHost.csproj", "{F89BC237-0B83-416C-B697-BC04FD29FF5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServerHost", "WebServicesHost\WebServerHost.csproj", "{F89BC237-0B83-416C-B697-BC04FD29FF5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{15E9856E-D928-4181-AB89-EE4BE2B5618E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.MockReferenceService", "Services.MockReferenceService\Services.MockReferenceService.csproj", "{6F248B6A-B738-4C88-8618-34E2F82CA49F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.ReferenceService.Interfaces", "Services.ReferenceService.Interfaces\Services.ReferenceService.Interfaces.csproj", "{879B91B4-2633-4EDE-A88C-D953F52FA2E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMqInfrastructure", "RabbitMqInfrastructure\RabbitMqInfrastructure.csproj", "{938BAECC-A9DB-4DBD-AEEA-B7F0A026B686}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EC82081C-3899-4C7D-A848-26EF047E16EF}"
+	ProjectSection(SolutionItems) = preProject
+		settings.xml = settings.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +56,10 @@ Global
 		{879B91B4-2633-4EDE-A88C-D953F52FA2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{879B91B4-2633-4EDE-A88C-D953F52FA2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{879B91B4-2633-4EDE-A88C-D953F52FA2E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938BAECC-A9DB-4DBD-AEEA-B7F0A026B686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938BAECC-A9DB-4DBD-AEEA-B7F0A026B686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938BAECC-A9DB-4DBD-AEEA-B7F0A026B686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938BAECC-A9DB-4DBD-AEEA-B7F0A026B686}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

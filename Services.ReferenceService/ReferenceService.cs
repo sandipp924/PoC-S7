@@ -8,24 +8,36 @@ using ServiceStack;
 
 namespace Services
 {
+    /// <summary>
+    /// Reference service implementation.
+    /// </summary>
     public class ReferenceService : IReferenceService
     {
-        private int _callCount;
+        #region Member Vars
 
-        public ReferenceService()
-        {
-        }
+        private int _callCount; 
 
-        public SymbologyInfo Any(SymbologyInfoQuery query)
+        #endregion
+
+        #region GetSymbologyInfo
+
+        /// <summary>
+        /// Gets symbology information based on the specified query parameters.
+        /// </summary>
+        /// <param name="query">Contains information that identifies the symbology information to return.</param>
+        /// <returns>SymbologyInfo object for the specified query. If no such symbology information exists then returns null.</returns>
+        public SymbologyInfo Get(SymbologyInfoQuery query)
         {
             _callCount++;
-            return new SymbologyInfo 
-            { 
-                SyCode = query.SyCode, 
-                LoanXId = _callCount.ToString(), 
+            return new SymbologyInfo
+            {
+                SyCode = query.SyCode,
+                LoanXId = _callCount.ToString(),
                 Cusip = _callCount.ToString(),
                 Description = "Time: " + DateTime.Now.ToString("h:mm:ss tt")
             };
-        }
+        } 
+
+        #endregion
     }
 }
