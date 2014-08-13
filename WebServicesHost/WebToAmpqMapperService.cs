@@ -18,10 +18,18 @@ namespace WebServices
 {
     public class WebToAmpqMapperService : Service
     {
+        #region Member Vars
+
         private readonly ConnectionFactory _rabbitMqConnectionFactory;
         private readonly ConcurrentDictionary<Type, DtoConfigurationSettings> _dtoConfigurationSettings;
-        private readonly MqConfiguration _rabbitMqConfiguration;
+        private readonly MqConfiguration _rabbitMqConfiguration; 
 
+        #endregion
+
+        #region Constructor
+        /// <summary>
+        /// Constructor. Initializes a new instance of <see cref="WebToAmpqMapperService"/>.
+        /// </summary>
         public WebToAmpqMapperService()
         {
             _dtoConfigurationSettings = new ConcurrentDictionary<Type, DtoConfigurationSettings>();
@@ -31,8 +39,15 @@ namespace WebServices
             IAppSettings settings = new AppSettings();
             _rabbitMqConnectionFactory = Utilities.CreateMqConnectionFactory(settings);
             _rabbitMqConfiguration = Utilities.GetMqConfiguration(settings);
-        }
+        } 
+        #endregion
 
+        #region GetCachedDtoConfigurationSettings
+        /// <summary>
+        /// Gets the DTO specific configuration from the application settings file.
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <returns></returns>
         private DtoConfigurationSettings GetCachedDtoConfigurationSettings<TDto>()
         {
             DtoConfigurationSettings ret;
@@ -48,13 +63,29 @@ namespace WebServices
             }
 
             return ret;
-        }
-        
+        } 
+        #endregion
+
+        #region Get
+        /// <summary>
+        /// Query method for SymbologyInfoQuery DTO. ServiceStack looks for method with Get/Post/Any name and a single DTO parameter.
+        /// </summary>
+        /// <param name="symbologyInfoQuery"></param>
+        /// <returns></returns>
         public object Get(SymbologyInfoQuery symbologyInfoQuery)
         {
             return this.GetHelper<SymbologyInfoQuery, object>(symbologyInfoQuery);
-        }
+        } 
+        #endregion
 
+        #region GetHelper
+        /// <summary>
+        /// A generic method for performing queries via RabbitMq broker.
+        /// </summary>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="queryObject"></param>
+        /// <returns></returns>
         private object GetHelper<TMessage, TResponse>(TMessage queryObject)
         {
             var dtoConfSettings = this.GetCachedDtoConfigurationSettings<TMessage>();
@@ -62,7 +93,7 @@ namespace WebServices
             using (var rpcCallHelper = new RabbitMqRpcHelper<TMessage, TResponse>(_rabbitMqConnectionFactory, _rabbitMqConfiguration))
             {
                 if (dtoConfSettings.LogQueries.Value)
-                    this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}", 
+                    this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}",
                         queryObject.ToJson(), Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
 
                 TResponse response;
@@ -72,6 +103,7 @@ namespace WebServices
                 else
                     return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
             }
-        }
+        } 
+        #endregion
     }
 }

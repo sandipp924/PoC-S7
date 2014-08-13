@@ -27,6 +27,8 @@ namespace ApplicationServicesHost
             typeof(Program).Debug("Running RabbitMqAppHost...");
 
             Console.WriteLine("Press a key to quit...");
+
+            // Read-key is necessary unless program will end. When using service shells, this will not be necessary.
             Console.ReadKey();
         }
     }

@@ -42,13 +42,20 @@
                 $("#multiQueryError").text("");
                 $("#multiQueryStatus").text("Executing 10 queries...");
 
+                var startTime = new Date();
+
                 var resultCount = 0;
                 var errorCount = 0;
                 var list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
                 list.forEach(function (i) {
                     var info = { queryTime: new Date().toLocaleTimeString(), queryNo: i };
 
-                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i + "?timeToWait=" + Math.floor((4000 + Math.random() * 4000));
+                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i + "?timeToWait=" + Math.floor((4000 + Math.random() * 2000));
+
+                    var timeDiffInSeconds = function (x, y) {
+                        return x.getHours() * 60 * 60 + x.getMinutes() * 60 + x.getSeconds()
+                            - (y.getHours() * 60 * 60 + y.getMinutes() * 60 + y.getSeconds());
+                    };
 
                     $.getJSON(url, function (data) {
                         var rowTemplate = "<tr><td>${queryNo}</td>"
@@ -64,9 +71,18 @@
 
                         resultCount++;
                         $("#multiQueryStatus").text("Got " + resultCount + " results back.");
+
+                        if (10 === resultCount) {
+                            $("#timeTakenSpan").text(timeDiffInSeconds(new Date(), startTime) + " seconds");
+                        }
+
                     }).fail(function (jqXHR, textStatus, error) {
                         resultCount++;
                         $("#multiQueryResultsTable tbody").append('<tr><td>' + info.queryNo + '</td><td><span style="color:red">Error: ' + error + '</span></td></tr>');
+
+                        if (10 === resultCount) {
+                            $("#timeTakenSpan").text(timeDiffInSeconds(new Date(), startTime) + " seconds");
+                        }
                     });
                 });
             });
@@ -180,11 +196,13 @@
         <div style="margin: 5px; background: #eeeeff">
             <h4>Demonstration of queries executed in parallel.</h4>
             <p>
-                Example of multiple queries executed in parallel. Application service takes random amount of time between <b>4 and 8 seconds to process</b> each call.
+                Example of multiple queries executed in parallel. Application service takes random amount of time between <b>4 and 6 seconds to process</b> each call.
+                <i>Note: Depending upon the browser being used, there may be limitation on number of parallel requests that the browser will send to web server.</i>
                 <br />
-                <button id="btnParallelQueries">Click here</button> to execute 10 queries at the same time.
+                <button id="btnParallelQueries">Click here</button> to execute queries in parallel.
                 <br />
                 <span id="multiQueryStatus"></span>
+                <span id="timeTakenSpan"></span>
             </p>
             <p>Results:</p>
             <table id="multiQueryResultsTable" class="a" style="width:100%">

@@ -50,6 +50,7 @@ namespace WebServices
                 AllowJsonpRequests = true, //Enable JSONP requests
             });
 
+            // Add no-cache response to direct the browser to not cache the responses.
             GlobalResponseFilters.Add((request, response, responseDto) =>
             {
                 response.AddHeader("Cache-Control", "no-cache");

@@ -21,7 +21,7 @@
   <add key="ServicesToRun" value="ReferenceService" />
 
   <!--UseMock will use a service by the same name but with 'Mock' prefix - ie MockReferenceService.-->
-  <add key="ReferenceService" value="{UseMock: true}" />
+  <add key="ReferenceService" value="{UseMock:true}" />
 
   <!--Per DTO configuration settings. These are de-serialized into DtoConfigurationSettings class in common assembly.-->
   <add key="SymbologyInfoQuery" value="{AmqpResponseTimeOut:10000,LogQueries:true}" />

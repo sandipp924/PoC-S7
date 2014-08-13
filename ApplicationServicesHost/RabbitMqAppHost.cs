@@ -21,15 +21,25 @@ namespace ApplicationServicesHost
 {
     public class RabbitMqAppHost : BasicAppHost
     {
-        private readonly Dictionary<IRabbitMqMessageProcessor, Thread> _rabbitMqMessageProcessors = new Dictionary<IRabbitMqMessageProcessor, Thread>();
+        #region Member Vars
 
+        private readonly Dictionary<IRabbitMqMessageProcessor, Thread> _rabbitMqMessageProcessors = new Dictionary<IRabbitMqMessageProcessor, Thread>(); 
+
+        #endregion
+
+        #region Constructor
         /// <summary>
-        /// Initializes a new instance of your RabbitMQ Services host application, with the specified name and assembly containing the services.
+        /// Constructor. Initializes a new instance of your RabbitMQ Services host application, with the specified name and assembly containing the services.
         /// </summary>
-        public RabbitMqAppHost() : base("RabbitMQ Services Host", typeof(RabbitMqAppHost).Assembly) 
-        { 
-        }
+        public RabbitMqAppHost()
+            : base("RabbitMQ Services Host", typeof(RabbitMqAppHost).Assembly)
+        {
+        } 
+        #endregion
 
+        #region Base Overrides
+
+        #region Configure
         /// <summary>
         /// Configure the container with the necessary routes for your ServiceStack application.
         /// </summary>
@@ -55,7 +65,32 @@ namespace ApplicationServicesHost
 
             this.Run();
         }
+        #endregion
 
+        #region Dispose
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+        #endregion 
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region RegisterService
+        /// <summary>
+        /// Registers a service.
+        /// </summary>
+        /// <param name="service">Name of the service to configure. Conventions established for naming are as the following. The name of the service
+        /// corresponds to the name of the service interface without 'I'. The service class implementation will be of the same
+        /// name. Mock service implementation will have 'Mock' prefix. The assembly name will be the 'Services.X' where X is
+        /// the class name of the service. Example, IReferenceService is interface, ReferenceService and MockReferenceService
+        /// are class names and Services.ReferenceService is assembly. The namespace is Services.</param>
+        /// <param name="serviceConfig"></param>
+        /// <returns>True if the registration is successful. False otherwise.</returns>
         public bool RegisterService(string service, ServiceConfigurationSettings serviceConfig)
         {
             var serviceInterfaceName = "I" + service;
@@ -101,14 +136,21 @@ namespace ApplicationServicesHost
 
             this.ServiceController.RegisterService(serviceClassType);
             this.Container.Register(Activator.CreateInstance(serviceClassType), serviceInterfaceType);
+            this.GetType().DebugFormat("Registered {0} service.", serviceClassType.Name);
+
             return true;
         }
+        #endregion
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
+        #endregion
 
+        #region Private Methods
+
+        #region RegisterServices
+        /// <summary>
+        /// Registers services based on what's specified in application configuration.
+        /// </summary>
+        /// <param name="settings"></param>
         private void RegisterServices(IAppSettings settings)
         {
             var servicesToRun = settings.GetList("ServicesToRun");
@@ -120,7 +162,9 @@ namespace ApplicationServicesHost
                 this.RegisterService(iiService, serviceConfig);
             }
         }
+        #endregion
 
+        #region Run
         /// <summary>
         /// Listens for AMQP messages and responds to them.
         /// </summary>
@@ -145,5 +189,10 @@ namespace ApplicationServicesHost
                 serverThread.Start();
             }
         }
+        #endregion
+
+        #endregion 
+
+        #endregion
     }
 }

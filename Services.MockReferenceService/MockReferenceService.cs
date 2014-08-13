@@ -30,12 +30,12 @@ namespace Services
         /// <returns>SymbologyInfo object for the specified query. If no such symbology information exists then returns null.</returns>
         public SymbologyInfo Get(SymbologyInfoQuery query)
         {
-            Thread.Sleep(query.TimeToWait);
-
             _callCount++;
 
-            this.GetType().DebugFormat("Request for {0} on process id {1}, thread id {2}", 
+            this.GetType().DebugFormat("Request for {0} on process id {1}, thread id {2}",
                 query.SyCode, Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
+
+            Thread.Sleep(query.TimeToWait);
 
             return new SymbologyInfo
             {
