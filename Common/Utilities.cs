@@ -33,14 +33,6 @@ namespace Common
             {
                 Uri = settings.Get<string>("AmqpServer", null),
             };
-
-            var mqConfiguration = settings.Get<MqConfiguration>("AmqpConfiguration", new MqConfiguration
-            {
-                ExchangeDurable = true,
-                QueueDurable = true,
-                MessageDurable = true,
-                NoAck = false
-            });
         }
 
         public static MqConfiguration GetMqConfiguration(IAppSettings settings)

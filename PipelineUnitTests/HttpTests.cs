@@ -43,6 +43,7 @@ namespace PipelineUnitTests
             var jsonText = client.Get<string>("/Reference/Symbology/" + SYCODE);
 
             Assert.IsTrue(jsonText.Contains("syCode"));
+            System.Diagnostics.Debug.WriteLine(jsonText);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Services
         {
             _callCount++;
 
-            this.GetType().DebugFormat("Request for {0} on process id {1}, thread id {2}",
+            this.GetType().DebugFormat("Mock service request for {0} on process id {1}, thread id {2}",
                 query.SyCode, Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
 
             Thread.Sleep(query.TimeToWait);

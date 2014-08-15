@@ -6,8 +6,10 @@ RabbitMQ server needs to be installed. After installing it will run as a service
 NOTE: RabbitMQ service may not run 'correctly'. Even if windows service is running, you may need to execute the following (adjust the path based on your installation) in bash or powershell:
 C:\Program Files (x86)\RabbitMQ Server\rabbitmq_server-3.3.4\sbin\rabbitmq-server.bat
 
-To run change the startup projects for the solution to multiple projects:
-* ApplicationServicesHost
-* WebServicesHost
+To run change the startup projects for the solution to multiple projects by right-clicking the solution and selecting Properties menu item and then Common Properties in the left pane on the properties dialog.
+* ApplicationServerConsoleShell
+* WebServerConsoleShell
+
+Above two projects are simple console apps that simply run the appropriate ServiceStack host implementations found in separate projects.
 
 This will run two app hosts in two separate consoles and a browser window will also be opened to demonstrate the request/response pipeline.
