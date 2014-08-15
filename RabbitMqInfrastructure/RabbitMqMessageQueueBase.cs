@@ -48,16 +48,7 @@ namespace Common
             _mqConfiguration = mqConfiguration;
             _messageEncoder = new JsonObjectEncoder<TMessage>();
 
-            try
-            {
-                _connection = _connectionFactory.CreateConnection();
-            }
-            catch (Exception exception)
-            {
-                throw new Exception("Unable to connect to RabbitMQ server. Ensure it's running at the right address."
-                    + " Address is configured via ApplicationServicesHost project's App.config.", exception);
-            }
-
+            _connection = _connectionFactory.CreateConnection();
             _channel = _connection.CreateModel();
 
             _channel.ExchangeDeclare(ExchangeName, "topic", _mqConfiguration.ExchangeDurable);

@@ -80,6 +80,21 @@ namespace ApplicationServicesHost
 
         #region Public Methods
 
+        #region CreateAndStart
+        /// <summary>
+        /// Creates a new instance and starts the server.
+        /// </summary>
+        /// <returns>New instance of server host.</returns>
+        public static RabbitMqAppHost CreateAndStart()
+        {
+            var appHost = new RabbitMqAppHost();
+            appHost.Init();
+
+            return appHost;
+        }
+
+        #endregion 
+
         #region RegisterService
         /// <summary>
         /// Registers a service.

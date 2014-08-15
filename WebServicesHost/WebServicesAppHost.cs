@@ -25,6 +25,8 @@ namespace WebServices
         } 
         #endregion
 
+        #region Base Overrides
+
         #region Configure
         /// <summary>
         /// Configure the container with the necessary routes for your ServiceStack application.
@@ -55,7 +57,48 @@ namespace WebServices
             {
                 response.AddHeader("Cache-Control", "no-cache");
             });
-        } 
+        }
+        #endregion 
+
+        #endregion
+
+        #region Properties
+
+        #region ListenUrl
+        /// <summary>
+        /// Gets the listen url that this server host is listening on.
+        /// </summary>
+        public string ListenUrl { get; private set; }
+        #endregion 
+
+        #endregion
+
+        #region Methods
+
+        #region CreateAndStart
+        /// <summary>
+        /// Creates a new instance and starts the server.
+        /// </summary>
+        /// <param name="listenUrlOverride">If specified then this address is used for listening. Otherwise will listen on 
+        /// localhost:port where the port is retrieved from 'HttpListenPort' setting in the application settings.</param>
+        /// <returns>New instance of server host.</returns>
+        public static WebServicesAppHost CreateAndStart(string listenUrlOverride = null)
+        {
+            IAppSettings settings = new AppSettings();
+
+            var webServicesHost = new WebServicesAppHost();
+
+            webServicesHost.ListenUrl = !string.IsNullOrEmpty(listenUrlOverride)
+                ? listenUrlOverride 
+                : string.Format("http://localhost:{0}/", settings.Get<int>("HttpListenPort", 8080));
+
+            webServicesHost.Init().Start(webServicesHost.ListenUrl);
+
+            return webServicesHost;
+        }
+
+        #endregion 
+
         #endregion
     }
 }

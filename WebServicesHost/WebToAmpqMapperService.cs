@@ -13,6 +13,7 @@ using System.Web;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading;
+using RabbitMQ.Client.Exceptions;
 
 namespace WebServices
 {
@@ -90,18 +91,26 @@ namespace WebServices
         {
             var dtoConfSettings = this.GetCachedDtoConfigurationSettings<TMessage>();
 
-            using (var rpcCallHelper = new RabbitMqRpcHelper<TMessage, TResponse>(_rabbitMqConnectionFactory, _rabbitMqConfiguration))
+            try
             {
-                if (dtoConfSettings.LogQueries.Value)
-                    this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}",
-                        queryObject.ToJson(), Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
+                using (var rpcCallHelper = new RabbitMqRpcHelper<TMessage, TResponse>(_rabbitMqConnectionFactory, _rabbitMqConfiguration))
+                {
+                    if (dtoConfSettings.LogQueries.Value)
+                        this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}",
+                            queryObject.ToJson(), Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
 
-                TResponse response;
-                Exception error;
-                if (rpcCallHelper.Call(queryObject, out response, TimeSpan.FromMilliseconds(dtoConfSettings.AmqpResponseTimeOut.Value), out error))
-                    return response;
-                else
-                    return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
+                    TResponse response;
+                    Exception error;
+                    if (rpcCallHelper.Call(queryObject, out response, TimeSpan.FromMilliseconds(dtoConfSettings.AmqpResponseTimeOut.Value), out error))
+                        return response;
+                    else
+                        return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
+                }
+            }
+            catch (BrokerUnreachableException exception)
+            {
+                return new HttpError(System.Net.HttpStatusCode.ServiceUnavailable, 
+                    "Unable to connect to RabbitMQ broker. Ensure it's running and correct adress is specified (settings.xml).", exception.Message);
             }
         } 
         #endregion

@@ -12,7 +12,7 @@
 
         $(document).ready(function () {
             var getSymbologyInfo = function () {
-                var url = "http://localhost:8080/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
+                var url = "/Reference/Symbology/" + encodeURI($("#syCodeInput").val());
                 $("#urlQueried").text(url);
 
                 $("#status").text("Querying for symbology data...");
@@ -39,8 +39,10 @@
             $('#btnParallelQueries').click(function (args) {
                 args.preventDefault();
 
+                $("#multiQueryResultsTable tbody").text("");
                 $("#multiQueryError").text("");
                 $("#multiQueryStatus").text("Executing 10 queries...");
+                $("#timeTakenSpan").text("");
 
                 var startTime = new Date();
 
@@ -50,7 +52,7 @@
                 list.forEach(function (i) {
                     var info = { queryTime: new Date().toLocaleTimeString(), queryNo: i };
 
-                    var url = "http://localhost:8080/Reference/Symbology/" + "Code" + i + "?timeToWait=" + Math.floor((4000 + Math.random() * 2000));
+                    var url = "/Reference/Symbology/" + "Code" + i + "?timeToWait=" + Math.floor((4000 + Math.random() * 2000));
 
                     var timeDiffInSeconds = function (x, y) {
                         return x.getHours() * 60 * 60 + x.getMinutes() * 60 + x.getSeconds()
@@ -91,7 +93,7 @@
             $('#btnTimeOut').click(function (args) {
                 args.preventDefault();
                 
-                var url = "http://localhost:8080/Reference/Symbology/" + "test123?TimeToWait=20000";
+                var url = "/Reference/Symbology/" + "test123?TimeToWait=20000";
 
                 $("#timeOutQueryStatus").text("Sending request: " + url);
                 $("#timeOutQueryError").text("");

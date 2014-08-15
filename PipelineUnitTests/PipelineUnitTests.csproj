@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FFFF7250-3721-465C-8ABA-5A57566307D6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PipelineUnitTests</RootNamespace>
+    <AssemblyName>PipelineUnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="nunit.core">
+      <HintPath>..\packages\NUnitTestAdapter.1.1\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\packages\NUnitTestAdapter.1.1\lib\nunit.core.interfaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.util">
+      <HintPath>..\packages\NUnitTestAdapter.1.1\lib\nunit.util.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NUnit.VisualStudio.TestAdapter">
+      <HintPath>..\packages\NUnitTestAdapter.1.1\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=3.2.4.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RabbitMQ.Client.3.2.4\lib\net30\RabbitMQ.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack, Version=4.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.4.0.30\lib\net40\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client, Version=4.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Client.4.0.30\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=4.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Common.4.0.30\lib\net40\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=4.0.0.0, Culture=neutral, PublicKeyToken=e06fbc6124f57c43, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.30\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.RabbitMq">
+      <HintPath>..\packages\ServiceStack.RabbitMq.4.0.30\lib\net40\ServiceStack.RabbitMq.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=4.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Text.4.0.30\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GlobalTestsSetup.cs" />
+    <Compile Include="HttpTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ApplicationServerConsoleShell\ApplicationServerConsoleShell.csproj">
+      <Project>{4f06f05b-bb6e-42ff-a48c-6137b642c242}</Project>
+      <Name>ApplicationServerConsoleShell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ApplicationServicesHost\ApplicationServerHost.csproj">
+      <Project>{aa67b5ca-7c8a-4b71-8319-dfc7ef27d8c9}</Project>
+      <Name>ApplicationServerHost</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{15e9856e-d928-4181-ab89-ee4be2b5618e}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RabbitMqInfrastructure\RabbitMqInfrastructure.csproj">
+      <Project>{938baecc-a9db-4dbd-aeea-b7f0a026b686}</Project>
+      <Name>RabbitMqInfrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services.MockReferenceService\Services.MockReferenceService.csproj">
+      <Project>{6f248b6a-b738-4c88-8618-34e2f82ca49f}</Project>
+      <Name>Services.MockReferenceService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services.ReferenceService.Dtos\Services.ReferenceService.Dtos.csproj">
+      <Project>{fa2469f8-d5fe-48cd-8a24-5ee5f1dd4aaf}</Project>
+      <Name>Services.ReferenceService.Dtos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services.ReferenceService.Interfaces\Services.ReferenceService.Interfaces.csproj">
+      <Project>{879b91b4-2633-4ede-a88c-d953f52fa2e7}</Project>
+      <Name>Services.ReferenceService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Services.ReferenceService\Services.ReferenceService.csproj">
+      <Project>{ddb1ff34-7b30-429c-9d3e-a471fb251eef}</Project>
+      <Name>Services.ReferenceService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebServerConsoleShell\WebServerConsoleShell.csproj">
+      <Project>{129a18a0-5fe5-4702-bb7d-6b94654383e0}</Project>
+      <Name>WebServerConsoleShell</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebServicesHost\WebServerHost.csproj">
+      <Project>{f89bc237-0b83-416c-b697-bc04fd29ff5c}</Project>
+      <Name>WebServerHost</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)settings.xml" "$(TargetDir)" /B /Y</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

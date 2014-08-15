@@ -1,14 +1,14 @@
-﻿using Common;
-using ServiceStack;
-using ServiceStack.Configuration;
-using ServiceStack.Logging;
+﻿using ApplicationServicesHost;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
+using ServiceStack.Logging;
 
-namespace ApplicationServicesHost
+
+namespace ApplicationServerConsoleShell
 {
     class Program
     {
@@ -16,8 +16,7 @@ namespace ApplicationServicesHost
         {
             try
             {
-                var appHost = new RabbitMqAppHost();
-                appHost.Init();
+                var appHost = RabbitMqAppHost.CreateAndStart();
             }
             catch (Exception exception)
             {
@@ -32,5 +31,4 @@ namespace ApplicationServicesHost
             Console.ReadKey();
         }
     }
-
 }
