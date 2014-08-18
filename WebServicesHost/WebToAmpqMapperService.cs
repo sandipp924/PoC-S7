@@ -17,7 +17,10 @@ using RabbitMQ.Client.Exceptions;
 
 namespace WebServices
 {
-    public class WebToAmpqMapperService : Service
+    /// <summary>
+    /// Service that handles web requests. It delegates the requests to AMQP services and returns responses recieved from the services.
+    /// </summary>
+    public class WebToAmqpMapperService : Service
     {
         #region Member Vars
 
@@ -29,9 +32,9 @@ namespace WebServices
 
         #region Constructor
         /// <summary>
-        /// Constructor. Initializes a new instance of <see cref="WebToAmpqMapperService"/>.
+        /// Constructor. Initializes a new instance of <see cref="WebToAmqpMapperService"/>.
         /// </summary>
-        public WebToAmpqMapperService()
+        public WebToAmqpMapperService()
         {
             _dtoConfigurationSettings = new ConcurrentDictionary<Type, DtoConfigurationSettings>();
 
@@ -42,6 +45,52 @@ namespace WebServices
             _rabbitMqConfiguration = Utilities.GetMqConfiguration(settings);
         } 
         #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region ProcessRequest
+        /// <summary>
+        /// A generic method for performing queries via RabbitMq broker.
+        /// </summary>
+        /// <typeparam name="TRequest">Request DTO type.</typeparam>
+        /// <typeparam name="TResponse">Response DTO type.</typeparam>
+        /// <param name="request">Request DTO object.</param>
+        /// <returns>Returns the response for the request. The returned object can be an instance of DTO object corresponding to 
+        /// <typeparamref name="TRequest"/> request type, or an HttpError object in case of an error.</returns>
+        public object ProcessRequest<TRequest, TResponse>(TRequest request)
+        {
+            var dtoConfSettings = this.GetCachedDtoConfigurationSettings<TRequest>();
+
+            try
+            {
+                using (var rpcCallHelper = new RabbitMqRpcHelper<TRequest, TResponse>(_rabbitMqConnectionFactory, _rabbitMqConfiguration))
+                {
+                    if (dtoConfSettings.LogQueries.Value)
+                        this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}",
+                            request.ToJson(), Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
+
+                    TResponse response;
+                    Exception error;
+                    if (rpcCallHelper.Call(request, out response, TimeSpan.FromMilliseconds(dtoConfSettings.AmqpResponseTimeOut.Value), out error))
+                        return response;
+                    else
+                        return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
+                }
+            }
+            // BrokerUnreachableException is raised when RabbitMq broker is not running.
+            catch (BrokerUnreachableException exception)
+            {
+                return new HttpError(System.Net.HttpStatusCode.ServiceUnavailable,
+                    "Unable to connect to RabbitMQ broker. Ensure it's running and correct adress is specified (settings.xml).", exception.Message);
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Private Methods
 
         #region GetCachedDtoConfigurationSettings
         /// <summary>
@@ -64,55 +113,11 @@ namespace WebServices
             }
 
             return ret;
-        } 
+        }
         #endregion
 
-        #region Get
-        /// <summary>
-        /// Query method for SymbologyInfoQuery DTO. ServiceStack looks for method with Get/Post/Any name and a single DTO parameter.
-        /// </summary>
-        /// <param name="symbologyInfoQuery"></param>
-        /// <returns></returns>
-        public object Get(SymbologyInfoQuery symbologyInfoQuery)
-        {
-            return this.GetHelper<SymbologyInfoQuery, object>(symbologyInfoQuery);
-        } 
-        #endregion
+        #endregion 
 
-        #region GetHelper
-        /// <summary>
-        /// A generic method for performing queries via RabbitMq broker.
-        /// </summary>
-        /// <typeparam name="TMessage"></typeparam>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="queryObject"></param>
-        /// <returns></returns>
-        private object GetHelper<TMessage, TResponse>(TMessage queryObject)
-        {
-            var dtoConfSettings = this.GetCachedDtoConfigurationSettings<TMessage>();
-
-            try
-            {
-                using (var rpcCallHelper = new RabbitMqRpcHelper<TMessage, TResponse>(_rabbitMqConnectionFactory, _rabbitMqConfiguration))
-                {
-                    if (dtoConfSettings.LogQueries.Value)
-                        this.GetType().DebugFormat("Web request for {0} on process id {1}, thread id {2}",
-                            queryObject.ToJson(), Process.GetCurrentProcess().Id, Thread.CurrentThread.ManagedThreadId);
-
-                    TResponse response;
-                    Exception error;
-                    if (rpcCallHelper.Call(queryObject, out response, TimeSpan.FromMilliseconds(dtoConfSettings.AmqpResponseTimeOut.Value), out error))
-                        return response;
-                    else
-                        return new HttpError(System.Net.HttpStatusCode.RequestTimeout, "Time out recieving mq message.");
-                }
-            }
-            catch (BrokerUnreachableException exception)
-            {
-                return new HttpError(System.Net.HttpStatusCode.ServiceUnavailable, 
-                    "Unable to connect to RabbitMQ broker. Ensure it's running and correct adress is specified (settings.xml).", exception.Message);
-            }
-        } 
         #endregion
     }
 }

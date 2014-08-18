@@ -6,6 +6,7 @@ using ServiceStack.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace WebServices
@@ -15,12 +16,18 @@ namespace WebServices
     /// </summary> 
     public class WebServicesAppHost : AppSelfHostBase
     {
+        #region Member Vars
+
+        private WebToAmqpMapperService _webToAmqpMapperService; 
+
+        #endregion
+
         #region Constructor
         /// <summary>
         /// Constructor. Initializes a new instance of ServiceStack application, with the specified name and assembly containing the services.
         /// </summary>
-        public WebServicesAppHost()
-            : base("Web Services Host", typeof(WebToAmpqMapperService).Assembly)
+        public WebServicesAppHost() 
+            : base("Web Services Host", typeof(WebServicesAppHost).Assembly)
         {
         } 
         #endregion
@@ -57,7 +64,15 @@ namespace WebServices
             {
                 response.AddHeader("Cache-Control", "no-cache");
             });
+
+            // WebToAmpqMapperService is the gateway to the AMQP services. It sends the requests to the MQ broker and
+            // waits for responses.
+            _webToAmqpMapperService = new WebToAmqpMapperService();
+
+            // Register service proxies for DTO's of services that are configured to be run.
+            this.RegisterDtosForServices(settings);
         }
+
         #endregion 
 
         #endregion
@@ -75,6 +90,8 @@ namespace WebServices
 
         #region Methods
 
+        #region Public Methods
+
         #region CreateAndStart
         /// <summary>
         /// Creates a new instance and starts the server.
@@ -89,7 +106,7 @@ namespace WebServices
             var webServicesHost = new WebServicesAppHost();
 
             webServicesHost.ListenUrl = !string.IsNullOrEmpty(listenUrlOverride)
-                ? listenUrlOverride 
+                ? listenUrlOverride
                 : string.Format("http://localhost:{0}/", settings.Get<int>("HttpListenPort", 8080));
 
             webServicesHost.Init().Start(webServicesHost.ListenUrl);
@@ -97,7 +114,89 @@ namespace WebServices
             return webServicesHost;
         }
 
+        #endregion  
+
+        #endregion
+
+        #region Private Methods
+
+        #region GetCorrespondingResponseType
+        /// <summary>
+        /// Gets the typeof of object that is expected when a request of specified DTO type is processed by the associated service.
+        /// </summary>
+        /// <param name="dtoType">Request DTO type.</param>
+        /// <returns>Corresponding DTO response type. This is based on IReturn<> implementation of DTO type or if that interface is
+        /// not implemented by the DTO type then typeof(object) is returned.</returns>
+        private static Type GetCorrespondingResponseType(Type dtoType)
+        {
+            Type responseType = typeof(object);
+            if (dtoType.IsAssignableFrom(typeof(IReturn)))
+            {
+                var returnInterfaceType = dtoType.GetTypeWithGenericTypeDefinitionOf(typeof(IReturn<>));
+                if (returnInterfaceType != null)
+                    responseType = returnInterfaceType.GetGenericArguments().First();
+            }
+
+            return responseType;
+        }
         #endregion 
+
+        #region RegisterDtosForService
+        /// <summary>
+        /// Creates and registers a service for each DTO for the specified service.
+        /// </summary>
+        /// <param name="service">DTO's for this service will be processed.</param>
+        /// <returns>True if the registration is successful. False otherwise.</returns>
+        public bool RegisterDtosForService(string service)
+        {
+            var assemblyName = new AssemblyName("Services." + service + ".Dtos");
+            Assembly serviceDtosAssembly = null;
+            try
+            {
+                serviceDtosAssembly = Assembly.Load(assemblyName);
+            }
+            catch (Exception exception)
+            {
+                this.GetType().ErrorFormat("Unable to load assembly {0}.\r\n\t{1}", assemblyName, exception.Message);
+                return false;
+            }
+
+            var requestDtoTypes = serviceDtosAssembly.ExportedTypes
+                .Where(t => !t.IsAbstract && !t.IsInterface && t.GetCustomAttributes<RouteAttribute>().Any());
+
+            foreach (var requestDtoType in requestDtoTypes)
+            {
+                var responseType = GetCorrespondingResponseType(requestDtoType);
+                if (responseType != null)
+                {
+                    var serviceProxy = ServiceProxyFactory.Create(requestDtoType, responseType, _webToAmqpMapperService);
+                    this.ServiceController.RegisterService(serviceProxy.GetType());
+                    this.Container.Register(serviceProxy, serviceProxy.GetType());
+
+                    this.GetType().DebugFormat("Registered service for {0} DTO.", requestDtoType.Name);
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region RegisterDtosForServices
+        /// <summary>
+        /// Registers services based on what's specified in application configuration.
+        /// </summary>
+        /// <param name="settings"></param>
+        private void RegisterDtosForServices(IAppSettings settings)
+        {
+            var servicesToRun = settings.GetList("ServicesToRun");
+            foreach (var iiService in servicesToRun)
+            {
+                this.RegisterDtosForService(iiService);
+            }
+        }
+        #endregion
+
+        #endregion
 
         #endregion
     }

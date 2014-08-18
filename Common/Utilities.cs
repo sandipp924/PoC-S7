@@ -1,4 +1,5 @@
-﻿using ServiceStack.Configuration;
+﻿using ServiceStack;
+using ServiceStack.Configuration;
 using ServiceStack.Logging;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,5 @@ namespace Common
                 NoAck = false
             });
         }
-
     }
 }
