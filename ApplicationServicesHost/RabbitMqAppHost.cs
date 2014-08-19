@@ -150,7 +150,7 @@ namespace ApplicationServicesHost
             }
 
             this.ServiceController.RegisterService(serviceClassType);
-            this.Container.Register(Activator.CreateInstance(serviceClassType), serviceInterfaceType);
+            this.Container.Register(Activator.CreateInstance(serviceClassType), serviceClassType);
             this.GetType().DebugFormat("Registered {0} service.", serviceClassType.Name);
 
             return true;
